@@ -1,0 +1,139 @@
+import { Stack, Typography, Divider, TextField, Button, Box, FormControl } from "@mui/material";
+import { enqueueSnackbar } from "notistack";
+import { useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+
+function getCookie(name: string) {
+    function escape(s: string) { return s.replace(/([.*+?\^$(){}|\[\]\/\\])/g, '\\$1'); }
+    var match = document.cookie.match(RegExp('(?:^|;\\s*)' + escape(name) + '=([^;]*)'));
+    return match ? match[1] : "";
+}
+
+const ArticleForm = ({ article, mode, onApplied }: any) => {
+
+    useEffect(() => {
+        if (article == null) return
+
+        // setLabel(article.label)
+        // setContent(article.content)
+        // setTags(article.tags)
+        // setImageName("")
+
+        // setValue("label", article.label, { shouldValidate: true, shouldDirty: true, shouldTouch: true })
+        // setValue("content", article.content, { shouldValidate: true, shouldDirty: true, shouldTouch: true })
+        // setValue("tags", article.tags, { shouldValidate: true, shouldDirty: true, shouldTouch: true })
+
+        // reset({ label: "1", content: "1", tags: "1", surname: "15" })
+
+        file.current = null
+
+    }, [article])
+
+    const [label, setLabel] = useState("")
+    const [content, setContent] = useState("")
+    const [tags, setTags] = useState("")
+
+    const [imageName, setImageName] = useState("")
+    const file = useRef<any>()
+
+    const onImageSelect = (e: any) => {
+        file.current = e.target.files[0]
+
+        var name: string = e.target.files[0].name
+        if (name.length > 20) name = name.substring(0, 20) + "..."
+        setImageName(name)
+    }
+
+    const onAccept = () => {
+        let formData = new FormData()
+
+        const token = getCookie("csrftoken")
+
+        formData.append('label', label)
+        formData.append('content', content)
+        formData.append('tags', tags)
+        formData.append('csrfmiddlewaretoken', token)
+        if (file.current != null) formData.append('image', file.current);
+
+        var options = {
+            method: "POST",
+            body: formData,
+            ccredentials: "include",
+            // headers: {'X-CSRFToken': token}
+        }
+
+        if (mode == 'create') {
+            fetch("http://127.0.0.1:8000/articles/create", options).
+                then(res => res.json()).
+                then(data => {
+                    enqueueSnackbar("Статья создана", { variant: "success" })
+                    onApplied(data)
+                }).
+                catch(err => {
+                    enqueueSnackbar("Ошибка создания статьи", { variant: "error" })
+                })
+
+        } else if (mode == 'edit') {
+            fetch("http://127.0.0.1:8000/articles/update/" + article.pk, options).
+                then(res => res.json()).
+                then(data => {
+                    enqueueSnackbar("Статья отредактирована", { variant: "success" })
+                    onApplied(data)
+                }).
+                catch(err => {
+                    enqueueSnackbar("Ошибка редактирования статьи", { variant: "error" })
+                })
+
+        }
+    }
+
+    const onSubmit = (data: any) => {
+        console.log(formState)
+    }
+
+    const { register, control, handleSubmit, setValue, formState, reset } = useForm<any>({ defaultValues: { label: "", content: "22", tags: "", surname: "15" } })
+
+    return <>
+
+        {mode == 'edit' && <Stack direction='row' pb={2}>
+            <Typography variant='subtitle2' color='text.secondary'> {article == null ? "" : new Date(article.published).toLocaleString("ru")} </Typography>
+            <Divider orientation="vertical" flexItem sx={{ ml: 1, mr: 1 }} />
+            <Typography variant='subtitle2'>admin</Typography>
+        </Stack>}
+
+        <form noValidate onSubmit={handleSubmit(onSubmit)}>
+
+            {/* <TextField value={label} onChange={e => setLabel(e.target.value)} fullWidth margin='dense' size='small' label='Название' />
+        <TextField value={content} onChange={e => setContent(e.target.value)} minRows={15} multiline fullWidth margin='dense' size='small' label='Текст' />
+        <TextField value={tags} onChange={e => setTags(e.target.value)} fullWidth margin='dense' size='small' label='Теги' /> */}
+
+            {/* <Controller
+                render={ (props) => <TextField {...props} label="First Name" margin="normal" variant="outlined" />}
+                control={control}
+                name="surname"
+            /> */}
+
+            <TextField error={!!formState.errors.label} {...register("label", { required: true })} fullWidth margin='dense' size='small' label='Название' />
+            <TextField error={!!formState.errors.content} {...register("content", { required: true })} minRows={15} multiline fullWidth margin='dense' size='small' label='Текст' />
+            <TextField error={!!formState.errors.tags} {...register("tags", { required: true })} fullWidth margin='dense' size='small' label='Теги' />
+
+            <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} mt={4}>
+
+                {mode == 'edit' && <Button component="label" variant='contained' color='error'>Удалить</Button>}
+                {/* <Button component="label" variant='outlined' sx={{ wordWrap: '' }}> {imageName.length > 0 ? imageName : 'Прикрепить изображение'} <input onChange={onImageSelect} accept="image/*" type='file' hidden /></Button> */}
+                <Box flex={1} sx={{ display: { xs: 'none', md: 'block' } }} />
+                {/* <Button onClick={onAccept} component="label" variant='contained' color='success'>{mode == 'edit' ? 'Применить' : 'Опубликовать'}</Button> */}
+
+                <Button onClick={() => setValue("label", "", { shouldValidate: true, shouldDirty: true, shouldTouch: true })} >Тест</Button>
+
+                <Button type='submit' variant='contained' color='success'>{mode == 'edit' ? 'Применить' : 'Опубликовать'}</Button>
+
+            </Stack>
+
+        </form>
+
+
+    </>
+}
+
+export default ArticleForm
