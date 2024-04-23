@@ -35,6 +35,7 @@ media
 .DS_Store
 
 # All of npm
+.eslintrc.cjs
 vite.config.js
 package-lock.json
 package.json
