@@ -19,8 +19,8 @@ const ArticleDrawer = ({ selected, search, loading, articles, onClick }) => {
                 {
                     loading ?
                         [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((elem, index) => <Article key={index} loading={true} />) :
-                        articles.filter((elem) => (elem.label + elem.tags).
-                            includes(search)).map((elem, index) => <Article selected={selected?.pk == elem.pk} onClick={() => onClick(elem)} key={index} {...elem} />)
+                        articles.filter((elem) => (elem.label + elem.tags).toLowerCase().
+                            includes( search.toLowerCase() )).map((elem, index) => <Article selected={selected?.pk == elem.pk} onClick={() => onClick(elem)} key={index} {...elem} />)
                 }
             </Stack>
         </Drawer>

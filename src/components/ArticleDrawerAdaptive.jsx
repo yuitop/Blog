@@ -11,14 +11,12 @@ const ArticleDrawerAdaptive = ({ selected, search, loading, articles, onClick })
         // </div>
 
 
-
-
         <Stack direction='row' p={0} spacing={1} sx={{ overflowY: "hidden", overflowX: "scroll", width: "auto", display: { xs: "flex", md: "none" } }}>
             {
                 loading ?
                     [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((elem, index) => <Article key={index} loading={true} />) :
-                    articles.filter((elem) => (elem.label + elem.tags).
-                        includes(search)).map((elem, index) => <Article selected={selected?.pk==elem.pk} idPrefix="adaptive" onClick={() => onClick(elem)} key={index} {...elem} />)
+                    articles.filter((elem) => (elem.label + elem.tags).toLowerCase().
+                        includes( search.toLowerCase() )).map((elem, index) => <Article selected={selected?.pk==elem.pk} idPrefix="adaptive" onClick={() => onClick(elem)} key={index} {...elem} />)
             }
         </Stack>
 

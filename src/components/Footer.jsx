@@ -1,4 +1,7 @@
-import { SvgIcon, Stack, Typography, Box, IconButton } from "@mui/material"
+import { SvgIcon, Stack, Typography, Box, IconButton, useTheme } from "@mui/material"
+
+import Brightness5Icon from '@mui/icons-material/Brightness5';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
 
 const VkIcon = () => <SvgIcon viewBox='0 0 48 48' htmlColor='gray'>
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48px" height="48px" fill='currentColor'><path d="M45.763,35.202c-1.797-3.234-6.426-7.12-8.337-8.811c-0.523-0.463-0.579-1.264-0.103-1.776 c3.647-3.919,6.564-8.422,7.568-11.143C45.334,12.27,44.417,11,43.125,11l-3.753,0c-1.237,0-1.961,0.444-2.306,1.151 c-3.031,6.211-5.631,8.899-7.451,10.47c-1.019,0.88-2.608,0.151-2.608-1.188c0-2.58,0-5.915,0-8.28 c0-1.147-0.938-2.075-2.095-2.075L18.056,11c-0.863,0-1.356,0.977-0.838,1.662l1.132,1.625c0.426,0.563,0.656,1.248,0.656,1.951 L19,23.556c0,1.273-1.543,1.895-2.459,1.003c-3.099-3.018-5.788-9.181-6.756-12.128C9.505,11.578,8.706,11.002,7.8,11l-3.697-0.009 c-1.387,0-2.401,1.315-2.024,2.639c3.378,11.857,10.309,23.137,22.661,24.36c1.217,0.12,2.267-0.86,2.267-2.073l0-3.846 c0-1.103,0.865-2.051,1.977-2.079c0.039-0.001,0.078-0.001,0.117-0.001c3.267,0,6.926,4.755,8.206,6.979 c0.368,0.64,1.056,1.03,1.8,1.03l4.973,0C45.531,38,46.462,36.461,45.763,35.202z" /></svg>
@@ -11,21 +14,30 @@ const WhatsappIcon = () => <SvgIcon viewBox='0 0 48 48' htmlColor='gray'>
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48px" height="48px" fill='currentColor'><path d="M24,4C12.97,4,4,12.97,4,24c0,3.19,0.77,6.34,2.23,9.17l-2.14,7.66c-0.24,0.87,0.01,1.8,0.64,2.44 C5.21,43.74,5.85,44,6.5,44c0.23,0,0.45-0.03,0.67-0.09l7.66-2.14C17.66,43.23,20.82,44,24,44c11.03,0,20-8.97,20-20 C44,12.97,35.03,4,24,4z M34.36,31.37c-0.44,1.23-2.6,2.42-3.57,2.51c-0.97,0.09-1.88,0.44-6.34-1.32 c-5.38-2.12-8.78-7.63-9.04-7.99c-0.27-0.35-2.16-2.86-2.16-5.47c0-2.6,1.37-3.88,1.85-4.41c0.49-0.53,1.06-0.66,1.41-0.66 c0.36,0,0.71,0,1.02,0.01c0.37,0.02,0.79,0.04,1.19,0.92c0.47,1.04,1.5,3.66,1.63,3.93c0.13,0.26,0.22,0.57,0.04,0.92 c-0.17,0.35-0.26,0.57-0.53,0.88c-0.26,0.31-0.55,0.69-0.79,0.93c-0.26,0.26-0.54,0.55-0.23,1.08c0.31,0.53,1.37,2.26,2.94,3.66 c2.02,1.8,3.72,2.36,4.25,2.63c0.53,0.26,0.84,0.22,1.15-0.14c0.31-0.35,1.32-1.54,1.68-2.07c0.35-0.53,0.7-0.44,1.19-0.26 c0.48,0.17,3.08,1.45,3.61,1.72c0.53,0.26,0.88,0.39,1.01,0.61C34.8,29.07,34.8,30.13,34.36,31.37z" /></svg></SvgIcon>
 
 
-const Footer = () => {
-    return (
-      // bgcolor="#7CE8A9"
-        <Stack  direction='row' p={2} alignItems="center">
-            <Typography color="text.secondary" variant='subtitle2'>© 2024, technews.ru</Typography>
-            <Box flex={1}></Box>
+const Footer = ({setMode}) => {
 
-            <IconButton> <VkIcon /> </IconButton>
+  const theme = useTheme()
 
-            <IconButton> <TelegramIcon /> </IconButton>
+  const swapTheme = () => {
+    if(theme.palette.mode == 'dark') setMode('light')
+    else setMode('dark')
+  }
 
-            <IconButton> <WhatsappIcon /> </IconButton>
 
-        </Stack>
-    )
+  return (
+    // bgcolor="#7CE8A9"
+    <Stack direction='row' p={2} alignItems="center">
+      <IconButton onClick={swapTheme} sx={{ mr: 1 }}>  { theme.palette.mode == 'dark' ? <Brightness4Icon/> : <Brightness5Icon /> }</IconButton>
+      <Typography color="text.secondary" variant='subtitle2'>© 2024, technews.ru</Typography>
+
+      <Box flex={1}></Box>
+
+      <IconButton> <VkIcon /> </IconButton>
+      <IconButton> <TelegramIcon /> </IconButton>
+      <IconButton> <WhatsappIcon /> </IconButton>
+
+    </Stack>
+  )
 }
 
 export default Footer

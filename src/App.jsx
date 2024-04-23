@@ -20,7 +20,7 @@ import AuthDialog from './components/AuthDialog';
 import AdbIcon from '@mui/icons-material/Adb';
 
 
-function App() {
+function App({setMode}) {
   const [authDialogOpen, setAuthDialogOpen] = useState(false)
 
   const [state, setState] = useState('view') // 'edit'
@@ -157,7 +157,7 @@ function App() {
 
           <Divider flexItem></Divider>
 
-          <Footer />
+          <Footer setMode={setMode} />
 
         </Box>
       </Box>
