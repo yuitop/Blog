@@ -73,6 +73,8 @@ function App() {
 
         document.location.hash = "#" + data.pk
         if (articlesList != null) scrollToArticle(selectedRef.current)
+
+        document.title = data?.label + " / technews.com"
       }).catch(err => {
         enqueueSnackbar("Ошибка загрузки статей", { variant: "error" })
       })

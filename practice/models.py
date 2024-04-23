@@ -5,8 +5,8 @@ from django.contrib.auth.models import User
 
 class Article(models.Model) :
     label = models.CharField(max_length=200)
-    content = models.CharField(max_length=5000)
-    tags = models.CharField(max_length=200, blank=True)
+    content = models.CharField(max_length=10000)
+    tags = models.CharField(max_length=1000, blank=True)
     published = models.DateTimeField(auto_now_add=True)
     image = models.ImageField(upload_to="images", default=None, null=True)
     hidden = models.BooleanField(default=False)

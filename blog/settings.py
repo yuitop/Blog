@@ -24,7 +24,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-igx#^#x_&if(zfa_p7l1xm*jnso(8ao%6m&5+urxirb)-gw3a&'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
+CORS_ALLOW_ALL_ORIGINS = DEBUG
 
 ALLOWED_HOSTS = ['*']
 
@@ -141,8 +142,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CORS_ALLOWED_ORIGIN_REGEXES = [
 # "http://localhost:5173"
 # ]
-
-# CORS_ALLOW_ALL_ORIGINS = True
 
 # # # SESSION_COOKIE_DOMAIN = "http://localhost:5173"
 # CORS_ALLOW_CREDENTIALS = True
