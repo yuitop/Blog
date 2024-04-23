@@ -39,7 +39,7 @@ def create(request) :
     
     form = ArticleForm(request.POST, request.FILES)
     
-    print(form.errors)
+    # print(form.errors)
 
     if form.is_valid() :
         form.instance.author = user
