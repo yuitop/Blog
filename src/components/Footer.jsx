@@ -15,7 +15,7 @@ const Footer = () => {
     return (
       // bgcolor="#7CE8A9"
         <Stack  direction='row' p={2} alignItems="center">
-            <Typography color="text.secondary" variant='subtitle2'>© 2006–2024, Новости</Typography>
+            <Typography color="text.secondary" variant='subtitle2'>© 2024, technews.ru</Typography>
             <Box flex={1}></Box>
 
             <IconButton> <VkIcon /> </IconButton>
