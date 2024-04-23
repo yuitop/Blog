@@ -1,4 +1,4 @@
-import { Stack, Typography, Divider, TextField, Button, Box, FormControl, Skeleton, FormControlLabel, Switch } from "@mui/material";
+import { Stack, Typography, Divider, TextField, Button, Box, FormControl, Skeleton, FormControlLabel, Switch, DialogTitle, DialogContent, Dialog, DialogContentText, DialogActions } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -6,6 +6,26 @@ import { getCookie, trapSpacesForRequiredFields } from "../utils";
 import ArticleTop from "./ArticleTop";
 import { CheckBox } from "@mui/icons-material";
 import AuthContext from "../context/AuthContext";
+
+
+const DeleteConfirmDialog = ({ onDelete, deleteConfirmOpen, setDeleteConfirmOpen }) => {
+    return (<Dialog open={deleteConfirmOpen}>
+
+        <DialogTitle>Вы точно хотите удалить статью?</DialogTitle>
+
+        <DialogContent> <DialogContentText>Эту операцию невозможно отменить.</DialogContentText> </DialogContent>
+
+        <DialogActions>
+
+            <Button onClick={() => {onDelete(); setDeleteConfirmOpen(false)}} color="error">Удалить</Button>
+            <Button onClick={ () => setDeleteConfirmOpen(false) }>Отмена</Button>
+
+
+        </DialogActions>
+
+    </Dialog>)
+}
+
 
 const ArticleForm = ({ loading = true, article, mode, onApplied, onDeleted }) => {
 
@@ -21,12 +41,14 @@ const ArticleForm = ({ loading = true, article, mode, onApplied, onDeleted }) =>
 
     }, [article])
 
+    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
+
     const [imageName, setImageName] = useState("")
     const file = useRef()
 
     const [applying, setApplying] = useState(false)
 
-    const {authData} = useContext(AuthContext)
+    const { authData } = useContext(AuthContext)
 
     const onImageSelect = (e) => {
         file.current = e.target.files[0]
@@ -100,6 +122,8 @@ const ArticleForm = ({ loading = true, article, mode, onApplied, onDeleted }) =>
 
     return <>
 
+        <DeleteConfirmDialog onDelete={onDelete} deleteConfirmOpen={deleteConfirmOpen} setDeleteConfirmOpen={setDeleteConfirmOpen} />
+
         {mode == 'edit' &&
             <ArticleTop loading={loading} article={article} />
         }
@@ -110,19 +134,19 @@ const ArticleForm = ({ loading = true, article, mode, onApplied, onDeleted }) =>
                 <TextField error={!!formState.errors.label} helperText={formState.errors.label?.message}
                     disabled={loading || applying} onBlur={onBlur} onChange={onChange} value={value}
                     fullWidth margin='dense' size='small' label='Название' />
-            )} control={control} name="label" rules={{ required: "Заполните поле", validate: trapSpacesForRequiredFields }} />
+            )} control={control} name="label" rules={{ required: "Заполните поле", validate: trapSpacesForRequiredFields, maxLength: { value: 200, message: "Превышено допустимое кол-во символов" } }} />
 
             <Controller render={({ field: { onChange, onBlur, value } }) => (
                 <TextField error={!!formState.errors.content} helperText={formState.errors.content?.message}
                     disabled={loading || applying} onBlur={onBlur} onChange={onChange} value={value}
                     minRows={15} multiline fullWidth margin='dense' size='small' label='Текст' />
-            )} control={control} name="content" rules={{ required: "Заполните поле", validate: trapSpacesForRequiredFields }} />
+            )} control={control} name="content" rules={{ required: "Заполните поле", validate: trapSpacesForRequiredFields, maxLength: { value: 10000, message: "Превышено допустимое кол-во символов" } }} />
 
             <Controller render={({ field: { onChange, onBlur, value } }) => (
                 <TextField error={!!formState.errors.tags} helperText={formState.errors.tags?.message}
                     disabled={loading || applying} onBlur={onBlur} onChange={onChange} value={value}
                     fullWidth margin='dense' size='small' label='Теги' />
-            )} control={control} name="tags" rules={{ required: "Заполните поле", validate: trapSpacesForRequiredFields }} />
+            )} control={control} name="tags" rules={{ required: "Заполните поле", validate: trapSpacesForRequiredFields, maxLength: { value: 1000, message: "Превышено допустимое кол-во символов" } }} />
 
             {/* <TextField error={!!formState.errors.label} {...register("label", { required: true })} fullWidth margin='dense' size='small' label='Название' />
             <TextField error={!!formState.errors.content} {...register("content", { required: true })} minRows={15} multiline fullWidth margin='dense' size='small' label='Текст' />
@@ -130,7 +154,7 @@ const ArticleForm = ({ loading = true, article, mode, onApplied, onDeleted }) =>
 
             {/* <FormControlLabel control={<CheckBox />} label="Label" /> */}
 
-            {mode=='edit' && <Controller
+            {mode == 'edit' && <Controller
                 render={({ field: { onChange, onBlur, value } }) => <FormControlLabel control={<Switch onBlur={onBlur} onChange={onChange} checked={value} />} label="Скрыть" />}
                 control={control}
                 name="hidden"
@@ -140,7 +164,7 @@ const ArticleForm = ({ loading = true, article, mode, onApplied, onDeleted }) =>
 
             <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} mt={4}>
 
-                {mode == 'edit' && <Button onClick={onDelete} disabled={loading || applying} component="label" variant='contained' color='error'>Удалить</Button>}
+                {mode == 'edit' && <Button onClick={() => setDeleteConfirmOpen(true)} disabled={loading || applying} component="label" variant='contained' color='error'>Удалить</Button>}
                 <Button disabled={loading || applying} component="label" variant='outlined' sx={{ wordWrap: '' }}> {imageName.length > 0 ? imageName : 'Прикрепить изображение'} <input onChange={onImageSelect} accept="image/*" type='file' hidden /></Button>
                 <Box flex={1} sx={{ display: { xs: 'none', md: 'block' } }} />
                 {/* <Button onClick={onAccept} component="label" variant='contained' color='success'>{mode == 'edit' ? 'Применить' : 'Опубликовать'}</Button> */}
