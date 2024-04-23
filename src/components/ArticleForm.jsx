@@ -17,8 +17,8 @@ const DeleteConfirmDialog = ({ onDelete, deleteConfirmOpen, setDeleteConfirmOpen
 
         <DialogActions>
 
-            <Button onClick={() => {onDelete(); setDeleteConfirmOpen(false)}} color="error">Удалить</Button>
-            <Button onClick={ () => setDeleteConfirmOpen(false) }>Отмена</Button>
+            <Button onClick={() => { onDelete(); setDeleteConfirmOpen(false) }} color="error">Удалить</Button>
+            <Button onClick={() => setDeleteConfirmOpen(false)}>Отмена</Button>
 
 
         </DialogActions>
@@ -37,21 +37,21 @@ const ArticleForm = ({ loading = true, article, mode, onApplied, onDeleted }) =>
         setValue("tags", article.tags, { shouldValidate: true, shouldDirty: true, shouldTouch: true })
         setValue("hidden", article.hidden, { shouldValidate: true, shouldDirty: true, shouldTouch: true })
 
-        file.current = null
+        fileRef.current = null
 
     }, [article])
 
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
 
     const [imageName, setImageName] = useState("")
-    const file = useRef()
+    const fileRef = useRef()
 
     const [applying, setApplying] = useState(false)
 
     const { authData } = useContext(AuthContext)
 
     const onImageSelect = (e) => {
-        file.current = e.target.files[0]
+        fileRef.current = e.target.files[0]
 
         var name = e.target.files[0].name
         if (name.length > 20) name = name.substring(0, 20) + "..."
@@ -68,7 +68,7 @@ const ArticleForm = ({ loading = true, article, mode, onApplied, onDeleted }) =>
         formData.append('tags', tags)
         formData.append('hidden', hidden)
         formData.append('csrfmiddlewaretoken', token)
-        if (file.current != null) formData.append('image', file.current);
+        if (fileRef.current != null) formData.append('image', fileRef.current);
 
         var options = {
             method: "POST",
@@ -80,6 +80,8 @@ const ArticleForm = ({ loading = true, article, mode, onApplied, onDeleted }) =>
         setApplying(true)
 
         if (mode == 'create') {
+            enqueueSnackbar("Создание статьи...")
+
             fetch("api/articles/create", options).
                 then(res => res.json()).
                 then(data => {
@@ -91,6 +93,8 @@ const ArticleForm = ({ loading = true, article, mode, onApplied, onDeleted }) =>
                 }).finally(() => setApplying(false))
 
         } else if (mode == 'edit') {
+            enqueueSnackbar("Сохранение статьи...")
+
             fetch("api/articles/update/" + article.pk, options).
                 then(res => res.json()).
                 then(data => {
@@ -112,6 +116,8 @@ const ArticleForm = ({ loading = true, article, mode, onApplied, onDeleted }) =>
 
         setApplying(true)
 
+        enqueueSnackbar("Удаление статьи...")
+
         fetch("api/articles/delete/" + article.pk, options).
             then(data => { enqueueSnackbar("Статья удалена", { variant: "success" }); onDeleted() }).
             catch(err => { enqueueSnackbar("Ошибка удаления статьи", { variant: "error" }) }).
@@ -119,6 +125,25 @@ const ArticleForm = ({ loading = true, article, mode, onApplied, onDeleted }) =>
     }
 
     const { register, control, handleSubmit, setValue, formState } = useForm({ defaultValues: { label: "", content: "", tags: "", hidden: false } })
+
+
+    useEffect(() => {
+
+        document.onpaste = (e) => {
+            const item = e.clipboardData
+            const file = item?.files[0]
+
+            if(file && file.type.includes("image/")){
+                setImageName(file.name)
+                fileRef.current = file
+            }
+        }
+
+
+        return () => { document.onpaste = null }
+
+    }, [mode])
+
 
     return <>
 
