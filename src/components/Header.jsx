@@ -46,16 +46,19 @@ const Header = ({ search, setSearch, onLogin, onLogout }) => {
 
                         setTimeout(() => searchFieldRef.current.focus(), 10)
                     }}
-                    sx={{ display: (searchFocus || childSearch.length > 0) ? 'none' : 'inherit' }}
+                    sx={{ display: { xs: (searchFocus || childSearch.length > 0) ? 'none' : 'inherit', sm: 'none' } }}
                 >
                     <SearchIcon />
                 </IconButton>
 
-                {(searchFocus || childSearch.length > 0) && <TextField name="submit" type='search' value={childSearch} onChange={e => setChildSearch(e.target.value)}
+                <TextField name="submit" type='search' value={childSearch} onChange={e => setChildSearch(e.target.value)}
                     onKeyDown={e => { if (e.key == "Enter") e.target.blur() }}
                     inputRef={searchFieldRef}
                     onFocus={() => setSearchFocus(true)} onBlur={() => { setSearch(childSearch); setSearchFocus(false) }}
-                    sx={{ flexGrow: { xs: 1, sm: 0 }, }}
+                    sx={{
+                        flexGrow: { xs: 1, sm: 0 },
+                        display: { xs: (searchFocus || childSearch.length > 0) ? 'inherit' : 'none', sm: 'inherit' }
+                    }}
                     placeholder='Поиск' size='small' InputProps={{
                         startAdornment: (
                             <InputAdornment position="start">
@@ -63,7 +66,7 @@ const Header = ({ search, setSearch, onLogin, onLogout }) => {
                             </InputAdornment>
                         ),
                     }}
-                />}
+                />
 
                 {authData.username != "anon" ?
                     <>
