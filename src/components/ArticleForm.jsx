@@ -45,6 +45,9 @@ const ArticleForm = ({ loading = true, article, mode, onApplied, onDeleted }) =>
 
     const [imageName, setImageName] = useState("")
     const fileRef = useRef()
+    // const fileInputRef = useRef()
+
+    const [imageUrl, setImageUrl] = useState("")
 
     const [applying, setApplying] = useState(false)
 
@@ -132,10 +135,26 @@ const ArticleForm = ({ loading = true, article, mode, onApplied, onDeleted }) =>
         document.onpaste = (e) => {
             const item = e.clipboardData
             const file = item?.files[0]
+            // const file = item.items[0].getAsFile()
 
-            if(file && file.type.includes("image/")){
+
+            if (file && file.type.includes("image/")) {
                 setImageName(file.name)
                 fileRef.current = file
+
+                var reader = new FileReader()
+                reader.onload = (e) => {
+                    console.log(e.target.result)
+                }
+
+                reader.readAsDataURL(file)
+
+                // var dt = new DataTransfer();
+                // dt.items.add(file);
+
+                // fileInputRef.current.files = dt.files
+
+                // console.log(fileInputRef.current)
             }
         }
 
@@ -190,7 +209,13 @@ const ArticleForm = ({ loading = true, article, mode, onApplied, onDeleted }) =>
             <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} mt={4}>
 
                 {mode == 'edit' && <Button onClick={() => setDeleteConfirmOpen(true)} disabled={loading || applying} component="label" variant='contained' color='error'>Удалить</Button>}
-                <Button disabled={loading || applying} component="label" variant='outlined' sx={{ wordWrap: '' }}> {imageName.length > 0 ? imageName : 'Прикрепить изображение'} <input onChange={onImageSelect} accept="image/*" type='file' hidden /></Button>
+                <Button disabled={loading || applying} component="label" variant='outlined' sx={{ wordWrap: '' }}>
+                    {imageName.length > 0 ? imageName : 'Прикрепить изображение'}
+                    <input onChange={onImageSelect} accept="image/*" type='file' hidden />
+                </Button>
+
+
+
                 <Box flex={1} sx={{ display: { xs: 'none', md: 'block' } }} />
                 {/* <Button onClick={onAccept} component="label" variant='contained' color='success'>{mode == 'edit' ? 'Применить' : 'Опубликовать'}</Button> */}
 

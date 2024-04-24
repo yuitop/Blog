@@ -1,10 +1,10 @@
-import { AppBar, Toolbar, Typography, TextField, InputAdornment, IconButton, Divider, SvgIcon, useTheme } from "@mui/material"
+import { AppBar, Toolbar, Typography, TextField, InputAdornment, IconButton, Divider, SvgIcon, useTheme, Box } from "@mui/material"
 
 import AccessibleForwardIcon from '@mui/icons-material/AccessibleForward';
 import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import SearchIcon from '@mui/icons-material/Search';
-import { useContext, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import AuthContext from "../context/AuthContext";
 import { Controller } from "react-hook-form";
 
@@ -24,40 +24,51 @@ const Logo = () => {
 const Header = ({ search, setSearch, onLogin, onLogout }) => {
 
     const { authData } = useContext(AuthContext)
-
-
     const [childSearch, setChildSearch] = useState(search)
+
+    const [searchFocus, setSearchFocus] = useState(false)
+    const searchFieldRef = useRef(null)
 
     return (
 
         <AppBar position='fixed' color='default' variant='outlined' elevation={0} sx={{ zIndex: 9 }}>
             <Toolbar sx={{ display: "flex", columnGap: 1, paddingLeft: { xs: 1, sm: 3 }, paddingRight: { xs: 1, sm: 3 } }}>
 
-                {/* <AccessibleForwardIcon color='primary' fontSize="large" /> */}
-                <Logo/>
+                <Logo />
 
-                <Typography color="text" variant='h6' sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}>TECHNEWS</Typography>
+                <Typography color='text' variant='h6' sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}>TECHNEWS</Typography>
+                {!(searchFocus || childSearch.length > 0) && <Box sx={{ flexGrow: 1, }} />}
 
-                {/*   */}
-                <TextField name="submit" type='search' value={childSearch} onChange={e => setChildSearch(e.target.value)} onBlur={() => setSearch(childSearch)}
+
+                <IconButton
+                    onClick={() => {
+                        setSearchFocus(true)
+
+                        setTimeout(() => searchFieldRef.current.focus(), 10)
+                    }}
+                    sx={{ display: (searchFocus || childSearch.length > 0) ? 'none' : 'inherit' }}
+                >
+                    <SearchIcon />
+                </IconButton>
+
+                {(searchFocus || childSearch.length > 0) && <TextField name="submit" type='search' value={childSearch} onChange={e => setChildSearch(e.target.value)}
                     onKeyDown={e => { if (e.key == "Enter") e.target.blur() }}
-                    placeholder='Поиск' size='small' sx={{ flexGrow: { xs: 1, sm: 0 } }} InputProps={{
+                    inputRef={searchFieldRef}
+                    onFocus={() => setSearchFocus(true)} onBlur={() => { setSearch(childSearch); setSearchFocus(false) }}
+                    sx={{ flexGrow: { xs: 1, sm: 0 }, }}
+                    placeholder='Поиск' size='small' InputProps={{
                         startAdornment: (
                             <InputAdornment position="start">
                                 <SearchIcon />
                             </InputAdornment>
                         ),
-                    }}></TextField>
-
-                {/* <Controller render={({ field: { onChange, onBlur, value } }) => (
-                    <TextField onBlur={onBlur} onChange={onChange} value={value}
-                        fullWidth margin='dense' size='small' label='Логин' />
-                )}/> */}
+                    }}
+                />}
 
                 {authData.username != "anon" ?
                     <>
-                        <Typography sx={{ display: { xs: "none", sm: "block" } }} ml={2}> {authData.username} </Typography>
-                        <IconButton onClick={onLogout}> <LogoutIcon /> </IconButton>
+                        <Typography sx={{ display: { xs: "none", sm: "block" } }} ml={1}> {authData.username} </Typography>
+                        <IconButton color='error' onClick={onLogout}> <LogoutIcon /> </IconButton>
                     </> :
 
                     <IconButton onClick={onLogin}> <LoginIcon /> </IconButton>

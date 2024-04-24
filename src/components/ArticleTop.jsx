@@ -7,7 +7,7 @@ const ArticleTop = ({ loading, article }) => {
     return (
         <Stack direction='row' pb={2}>
             <Typography variant='subtitle2' color='text.secondary'>
-                {loading ? <Skeleton width={100} /> : new Date(article?.published).toLocaleString("ru")}
+                {loading ? <Skeleton width={100} /> : new Date(article?.published).toLocaleDateString("ru")}
             </Typography>
             <Divider orientation="vertical" flexItem sx={{ ml: 1, mr: 1 }} />
             {loading ? <Skeleton width={60} /> : <Typography variant='subtitle2'> {article?.author?.first_name + " " + article?.author?.last_name} </Typography>}
